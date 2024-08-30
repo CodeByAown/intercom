@@ -25,6 +25,7 @@ class FormController extends Controller
         foreach ($sites as $site) {
             $options .= '<option value="'.$site->id.'">'.$site->name.'</option>';
         }
+        
         return $options;
     }
     // next
