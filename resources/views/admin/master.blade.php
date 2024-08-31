@@ -185,8 +185,11 @@
                     </div>
                     <ul class="sidebar-menu">
                         {{-- <li class="menu-header">Main</li> --}}
-                        <li class="dropdown active">
+                        {{-- <li class="dropdown active">
                             <a href="{{ route('dashboard') }}" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a>
+                        </li> --}}
+                        <li class="dropdown">
+                            <a href="{{ route('reports.index') }}" class="nav-link"><i data-feather="file-text"></i><span>Reports</span></a>
                         </li>
                         <li class="dropdown">
                             <a href="{{ route('clients.index') }}" class="nav-link"><i data-feather="activity"></i><span>clients</span></a>
@@ -198,14 +201,13 @@
                             <a href="{{ route('kits.index') }}" class="nav-link"><i data-feather="hash"></i><span>Kits</span></a>
                         </li>
                         <li class="dropdown">
-                            <a href="{{ route('form.index') }}" class="nav-link"><i data-feather="database"></i><span>Form</span></a>
-                        </li>
-                        <li class="dropdown">
                             <a href="{{ route('tickets.index') }}" class="nav-link"><i data-feather="bar-chart"></i><span>Tickets</span></a>
                         </li>
                         <li class="dropdown">
-                            <a href="{{ route('reports') }}" class="nav-link"><i data-feather="file-text"></i><span>Reports</span></a>
+                            <a href="{{ route('form.index') }}" class="nav-link"><i data-feather="database"></i><span>Form</span></a>
                         </li>
+
+
 
                     </ul>
                 </aside>

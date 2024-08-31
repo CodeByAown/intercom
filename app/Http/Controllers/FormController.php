@@ -25,7 +25,6 @@ class FormController extends Controller
         foreach ($sites as $site) {
             $options .= '<option value="'.$site->id.'">'.$site->name.'</option>';
         }
-        
         return $options;
     }
     // next
@@ -56,9 +55,9 @@ class FormController extends Controller
             'login_issue' => 'required|boolean',
         ]);
 
-        // Save the form data to the database
+        // Set the current date automatically
         $entry = new Entry();
-        $entry->date = $request->date;
+        $entry->date = now(); // Automatically set to current date
         $entry->client_id = $request->client_id;
         $entry->site_id = $request->site_id;
         $entry->kit_id = $request->kit_id;
@@ -69,16 +68,18 @@ class FormController extends Controller
         $entry->login_issue = $request->login_issue;
         $entry->save();
 
-        // Check if the warning box is triggered and if so, handle tickets
-        if ($request->speed !== '1gbps' || $request->poor_cable !== '0' || $request->update_pending !== '0' || $request->obstruction !== '0' || $request->login_issue !== '0') {
-            // Check if a ticket is already open or needs to be opened (this logic can be expanded based on your specific requirements)
-            if (!$this->ticketExists($entry)) {
-                $this->openNewTicket($entry);
-            }
+        // Check if any issues require a ticket
+        if ($this->needsTicket($request)) {
+            $this->openNewTicket($entry);
+            return redirect()->back()->with('warning', 'A new ticket has been opened due to detected issues.');
         }
 
-        // Clear form fields and redirect back with a success message
         return redirect()->back()->with('status', 'Form saved successfully!');
+    }
+
+    private function needsTicket($request)
+    {
+        return !($request->speed === '1gbps' && !$request->poor_cable && !$request->update_pending && !$request->obstruction && !$request->login_issue);
     }
 
     // Helper method to check if a ticket exists for the given entry
@@ -94,11 +95,13 @@ class FormController extends Controller
     // Helper method to open a new ticket
     private function openNewTicket($entry)
     {
+
         $ticket = new Ticket();
         $ticket->date = $entry->date;
         $ticket->client_id = $entry->client_id;
         $ticket->site_id = $entry->site_id;
         $ticket->kit_id = $entry->kit_id;
+        $ticket->ticket_number = date('Ymd') . '-' . strtoupper(uniqid());
         $ticket->location = 'Unknown'; // You might want to adjust this based on your data
         $ticket->wan = 'Unknown'; // You might want to adjust this based on your data
         $ticket->reason = 'Issue detected'; // Customize the reason as per your requirements

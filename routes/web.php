@@ -7,6 +7,7 @@ use App\Http\Controllers\KitController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\TicketController;
+use App\Models\Report;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 Auth::routes();
@@ -19,11 +20,18 @@ Route::get('/', function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
-Route::view('/reports', 'admin.report')->name('reports');
 Route::view('/tickets', 'admin.ticket')->name('tickets');
 
-
-
+// Reports routes starting from here
+Route::prefix('reports')->group(function () {
+    Route::get('/', [ReportController::class, 'index'])->name('reports.index');
+    Route::post('/generate', [ReportController::class, 'generate'])->name('reports.generate');
+    // Route::get('create', [ReportController::class, 'create'])->name('clients.create');
+    // Route::get('{client}', [ReportController::class, 'show'])->name('clients.show');
+    // Route::get('{client}/edit', [ReportController::class, 'edit'])->name('clients.edit');
+    // Route::put('{client}', [ReportController::class, 'update'])->name('clients.update');
+    // Route::delete('{client}', [ReportController::class, 'destroy'])->name('clients.destroy');
+});
 
 // Form routes
 
@@ -81,5 +89,18 @@ Route::prefix('tickets')->group(function () {
     Route::put('{ticket}', [TicketController::class, 'update'])->name('tickets.update');
     Route::delete('{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
     Route::put('/admin/{ticket}/close', [TicketController::class, 'close'])->name('tickets.close');
+    Route::put('/admin/{ticket}/reopen', [TicketController::class, 'reopen'])->name('tickets.reopen');
 
 });
+
+
+// // Entries routes
+// Route::prefix('entries')->group(function () {
+//     Route::get('/', [EntryController::class, 'index'])->name('entries.index');
+//     Route::get('create', [EntryController::class, 'create'])->name('entries.create');
+//     Route::post('store', [EntryController::class, 'store'])->name('entries.store');
+//     Route::get('{entry}', [EntryController::class, 'show'])->name('entries.show');
+//     Route::get('{entry}/edit', [EntryController::class, 'edit'])->name('entries.edit');
+//     Route::put('{entry}', [EntryController::class, 'update'])->name('entries.update');
+//     Route::delete('{entry}', [EntryController::class, 'destroy'])->name('entries.destroy');
+// });

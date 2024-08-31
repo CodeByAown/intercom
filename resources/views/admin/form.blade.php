@@ -11,6 +11,7 @@ Form
         color: red;
         font-weight: bold;
     }
+
 </style>
 @endsection
 
@@ -22,11 +23,28 @@ Form
 
         <h2>Data Entry Form</h2>
 
+        @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
         @if(session('status'))
             <div class="alert alert-success">
                 {{ session('status') }}
             </div>
         @endif
+
+        @if(session('warning'))
+        <div class="alert alert-warning">
+            {{ session('warning') }}
+        </div>
+    @endif
 
         <form method="POST" action="{{ route('form.save') }}">
             @csrf
@@ -151,19 +169,34 @@ Form
         }
     }
 
-    function checkForWarnings() {
-        var speed = $('#speed').val();
-        var poorCable = $('#poor_cable').val();
-        var updatePending = $('#update_pending').val();
-        var obstruction = $('#obstruction').val();
-        var loginIssue = $('#login_issue').val();
+    // function checkForWarnings() {
+    //     var speed = $('#speed').val();
+    //     var poorCable = $('#poor_cable').val();
+    //     var updatePending = $('#update_pending').val();
+    //     var obstruction = $('#obstruction').val();
+    //     var loginIssue = $('#login_issue').val();
 
-        if (speed !== '1gbps' || poorCable !== '0' || updatePending !== '0' || obstruction !== '0' || loginIssue !== '0') {
-            $('#warning-box').show().addClass('warning-box');
-        } else {
-            $('#warning-box').hide().removeClass('warning-box');
-        }
+    //     if (speed !== '1gbps' || poorCable !== '0' || updatePending !== '0' || obstruction !== '0' || loginIssue !== '0') {
+    //         $('#warning-box').show().addClass('warning-box');
+    //     } else {
+    //         $('#warning-box').hide().removeClass('warning-box');
+    //     }
+    // }
+
+    function checkForWarnings() {
+    var speed = $('#speed').val();
+    var poorCable = $('#poor_cable').val();
+    var updatePending = $('#update_pending').val();
+    var obstruction = $('#obstruction').val();
+    var loginIssue = $('#login_issue').val();
+
+    if (speed !== '1gbps' || poorCable !== '0' || updatePending !== '0' || obstruction !== '0' || loginIssue !== '0') {
+        $('#warning-box').show().addClass('warning-box');
+    } else {
+        $('#warning-box').hide();
     }
+}
+
 </script>
 @endsection
 

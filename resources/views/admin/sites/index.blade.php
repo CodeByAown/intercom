@@ -4,12 +4,16 @@
     Sites
 @endsection
 
+@section('style')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+@endsection
+
 @section('content')
 <div class="main-content">
     <h2>Sites</h2>
     <a href="{{ route('sites.create') }}" class="btn btn-primary mb-3">Add New Site</a>
 
-    <table class="table table-bordered">
+    <table id="sites-table" class="table table-bordered display">
         <thead>
             <tr>
                 <th>ID</th>
@@ -38,4 +42,14 @@
         </tbody>
     </table>
 </div>
+@endsection
+
+@section('js')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#sites-table').DataTable();
+    });
+</script>
 @endsection

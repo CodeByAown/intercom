@@ -4,12 +4,16 @@
     Kits
 @endsection
 
+@section('style')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+@endsection
+
 @section('content')
 <div class="main-content">
     <h2>Kits</h2>
     <a href="{{ route('kits.create') }}" class="btn btn-primary mb-3">Add New Kit</a>
 
-    <table class="table table-bordered">
+    <table id="kits-table" class="table table-bordered display">
         <thead>
             <tr>
                 <th>ID</th>
@@ -38,4 +42,14 @@
         </tbody>
     </table>
 </div>
+@endsection
+
+@section('js')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#kits-table').DataTable();
+    });
+</script>
 @endsection
