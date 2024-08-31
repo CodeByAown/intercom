@@ -90,4 +90,7 @@ Result
 
     const issueChart = new Chart(ctx, config);
 </script>
+
 @endsection
+
+{{-- section ended --}}
