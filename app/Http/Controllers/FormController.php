@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\client;
+use App\Models\Client;
 use App\Models\Entry;
 use App\Models\Kit;
 use App\Models\Site;
@@ -14,7 +14,7 @@ class FormController extends Controller
 
     public function index()
     {
-        $clients = client::all();
+        $clients = Client::all();
         return view('admin.form', compact('clients'));
     }
 

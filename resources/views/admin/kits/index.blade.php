@@ -12,7 +12,8 @@
 <div class="main-content">
     <h2>Kits</h2>
     <a href="{{ route('kits.create') }}" class="btn btn-primary mb-3">Add New Kit</a>
-
+    <div class="card">
+        <div class="card-body">
     <table id="kits-table" class="table table-bordered display">
         <thead>
             <tr>
@@ -41,6 +42,8 @@
             @endforeach
         </tbody>
     </table>
+</div>
+</div>
 </div>
 @endsection
 

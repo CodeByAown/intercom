@@ -4,9 +4,11 @@
 Reports
 @endsection
 
-
 @section('content')
 <div class="main-content">
+    @if(session('message'))
+    <div class="alert alert-info mt-3">{{ session('message') }}</div>
+@endif
     <section class="section">
         <div class="section-header">
             <h1>Generate Reports</h1>
@@ -30,43 +32,10 @@ Reports
                         </div>
                         <button type="submit" class="btn btn-primary">Generate Report</button>
                     </form>
-                </div>
-            </div>
 
-            <div id="reportResult" class="mt-4">
-                <!-- This section will display the generated report -->
+                </div>
             </div>
         </div>
     </section>
 </div>
-@endsection
-
-@section('js')
-<script>
-    document.getElementById('reportForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const timePeriod = document.getElementById('timePeriod').value;
-
-        // AJAX call to generate the report (you'll need to implement this endpoint)
-        fetch(`/generate-report?timePeriod=${timePeriod}`)
-            .then(response => response.json())
-            .then(data => {
-                // Process and display the report data
-                let reportHTML = '<h4>Report for ' + timePeriod.replace(/_/g, ' ') + '</h4>';
-                reportHTML += '<table class="table table-bordered"><thead><tr><th>Site</th><th>Data Point</th><th>Status</th></tr></thead><tbody>';
-
-                data.forEach(item => {
-                    reportHTML += `<tr>
-                        <td>${item.site}</td>
-                        <td>${item.dataPoint}</td>
-                        <td style="background-color: ${item.statusColor};">${item.status}</td>
-                    </tr>`;
-                });
-
-                reportHTML += '</tbody></table>';
-                document.getElementById('reportResult').innerHTML = reportHTML;
-            })
-            .catch(error => console.error('Error generating report:', error));
-    });
-</script>
 @endsection

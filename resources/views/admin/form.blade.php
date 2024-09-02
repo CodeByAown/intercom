@@ -23,6 +23,9 @@ Form
 
         <h2>Data Entry Form</h2>
 
+        <div class="card">
+            <div class="card-body">
+
         @if ($errors->any())
     <div class="alert alert-danger">
         <ul>
@@ -132,6 +135,8 @@ Form
             <!-- Submit Button -->
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
+       </div>
+       </div>
        </div>
 
 

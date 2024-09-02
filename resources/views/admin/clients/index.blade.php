@@ -12,6 +12,8 @@
 <div class="main-content">
     <h2>Clients</h2>
     <a href="{{ route('clients.create') }}" class="btn btn-primary mb-3">Add New Client</a>
+    <div class="card">
+        <div class="card-body">
 
     <table id="clients-table" class="table table-bordered display">
         <thead>
@@ -39,6 +41,8 @@
             @endforeach
         </tbody>
     </table>
+</div>
+</div>
 </div>
 @endsection
 

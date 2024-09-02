@@ -7,7 +7,8 @@
 @section('content')
 <div class="main-content">
     <h2>Create Ticket</h2>
-
+    <div class="card">
+        <div class="card-body">
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -50,5 +51,7 @@
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary">Save Ticket</button>
     </form>
+</div>
+</div>
 </div>
 @endsection

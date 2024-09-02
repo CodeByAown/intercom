@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\client;
+use App\Models\Client;
 use App\Models\Site;
 use Illuminate\Http\Request;
 
@@ -18,7 +18,7 @@ class SiteController extends Controller
       // Show the form for creating a new site.
       public function create()
       {
-          $clients = client::all();
+          $clients = Client::all();
           return view('admin.sites.create', compact('clients'));
       }
 

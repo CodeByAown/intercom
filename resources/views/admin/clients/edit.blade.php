@@ -7,7 +7,8 @@
 @section('content')
 <div class="main-content">
     <h2>Edit Client</h2>
-
+    <div class="card">
+        <div class="card-body">
     <form method="POST" action="{{ route('clients.update', $client->id) }}">
         @csrf
         @method('PUT')
@@ -17,5 +18,8 @@
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>
+
+</div>
+</div>
 </div>
 @endsection

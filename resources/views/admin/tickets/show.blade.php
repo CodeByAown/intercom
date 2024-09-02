@@ -7,7 +7,8 @@
 @section('content')
 <div class="main-content">
     <h2>Ticket Details</h2>
-
+    <div class="card">
+        <div class="card-body">
     <div class="mb-3">
         <label class="form-label">Date</label>
         <p>{{ $ticket->date }}</p>
@@ -32,7 +33,8 @@
         <label class="form-label">Status</label>
         <p>{{ $ticket->status }}</p>
     </div>
-
+    <div class="card">
+        <div class="card-body">
     <a href="{{ route('tickets.index') }}" class="btn btn-secondary">Back</a>
 </div>
 @endsection

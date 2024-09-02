@@ -9,7 +9,8 @@
     <h2>Create New Kit</h2>
 
 
-
+    <div class="card">
+        <div class="card-body">
     <form method="POST" action="{{ route('kits.store') }}">
         @csrf
         <div class="mb-3">
@@ -27,5 +28,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
+</div>
+</div>
 </div>
 @endsection

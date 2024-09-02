@@ -16,7 +16,8 @@
         </label>
     </div>
     <a href="{{ route('tickets.create') }}" class="btn btn-primary mb-3">Add New Ticket</a>
-
+    <div class="card">
+        <div class="card-body">
     <table id="tickets-table" class="display">
         <thead>
             <tr>
@@ -70,6 +71,8 @@
             @endforeach
         </tbody>
     </table>
+    </div>
+    </div>
 @endsection
 
 @section('js')

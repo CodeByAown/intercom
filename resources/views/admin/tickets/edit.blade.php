@@ -7,7 +7,8 @@
 @section('content')
 <div class="main-content">
     <h2>Edit Ticket</h2>
-
+    <div class="card">
+        <div class="card-body">
     <form method="POST" action="{{ route('tickets.update', $ticket->id) }}">
         @csrf
         @method('PUT')
@@ -33,5 +34,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>
+</div>
+</div>
 </div>
 @endsection
