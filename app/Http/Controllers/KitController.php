@@ -52,10 +52,10 @@ class KitController extends Controller
     // Update the specified kit in storage.
     public function update(Request $request, Kit $kit)
     {
-        $request->validate([
-            'site_id' => 'required|exists:sites,id',
-            'kit_number' => 'required|string|max:255|unique:kits,kit_number,' . $kit->id,
-        ]);
+        // $request->validate([
+        //     'site_id' => 'required|exists:sites,id',
+        //     'kit_number' => 'required|string|max:255|unique:kits,kit_number,' . $kit->id,
+        // ]);
 
         $kit->update($request->all());
 

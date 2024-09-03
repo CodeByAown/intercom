@@ -12,6 +12,19 @@
 <div class="main-content">
     <h2>Kits</h2>
     <a href="{{ route('kits.create') }}" class="btn btn-primary mb-3">Add New Kit</a>
+
+@if(session('status'))
+    <div class="alert alert-success">
+        {{ session('status') }}
+    </div>
+@endif
+{{-- next  --}}
+@if(session('warning'))
+<div class="alert alert-warning">
+    {{ session('warning') }}
+</div>
+@endif
+
     <div class="card">
         <div class="card-body">
     <table id="kits-table" class="table table-bordered display">

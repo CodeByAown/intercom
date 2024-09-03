@@ -18,6 +18,11 @@
     <a href="{{ route('tickets.create') }}" class="btn btn-primary mb-3">Add New Ticket</a>
     <div class="card">
         <div class="card-body">
+            @if(session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
     <table id="tickets-table" class="display">
         <thead>
             <tr>

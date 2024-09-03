@@ -14,29 +14,28 @@ class TicketController extends Controller
     // Display a listing of the tickets.
     public function index()
     {
-        $tickets = Ticket::all(); // Fetch all tickets from the database
+        $tickets = Ticket::all();
         return view('admin.tickets.index', compact('tickets'));
     }
 
-    public function reopen($id)
-{
-    $ticket = Ticket::findOrFail($id);
-    $ticket->status = 'active';
-    $ticket->save();
 
-    return redirect()->route('tickets.index')->with('status', 'Ticket activated successfully.');
-}
-
+    public function activate($id)
+    {
+        $ticket = Ticket::findOrFail($id);
+        if ($ticket->status !== 'active') {
+            $ticket->status = 'active';
+            $ticket->save();
+            return redirect()->route('tickets.index')->with('status', 'Ticket activated successfully.');
+        }
+        return redirect()->route('tickets.index')->with('warning', 'Ticket is already active.');
+    }
 
     public function close(Request $request, Ticket $ticket)
     {
-        // Update the status of the ticket to 'closed'
         $ticket->status = 'closed';
         $ticket->save();
-
-        return redirect()->route('tickets.index')->with('success', 'Ticket has been closed successfully!');
+        return redirect()->route('tickets.index')->with('status', 'Ticket has been closed successfully!');
     }
-
 
     // Show the form for creating a new ticket.
     public function create()
@@ -52,27 +51,29 @@ class TicketController extends Controller
     {
         $request->validate([
             'date' => 'required|date',
-            'ticket_number' => 'required',
+            'ticket_number' => 'required|unique:tickets,ticket_number',
+            'client_id' => 'required|exists:clients,id',
+            'site_id' => 'required|exists:sites,id',
+            'kit_id' => 'required|exists:kits,id',
             'location' => 'required|string',
             'wan' => 'required|string',
             'reason' => 'required|string',
         ]);
 
         $ticket = new Ticket();
-        $ticket->client_id = 1;
-        $ticket->site_id = 1;
-        $ticket->kit_id = 1;
+        $ticket->client_id = $request->client_id;
+        $ticket->site_id = $request->site_id;
+        $ticket->kit_id = $request->kit_id;
         $ticket->date = $request->date;
         $ticket->ticket_number = $request->ticket_number;
         $ticket->location = $request->location;
         $ticket->wan = $request->wan;
         $ticket->reason = $request->reason;
-        $ticket->status = 'active'; // New tickets start as active
+        $ticket->status = 'active';
         $ticket->save();
 
-        return redirect()->route('tickets.index')->with('success', 'Ticket created successfully!');
+        return redirect()->route('tickets.index')->with('status', 'Ticket created successfully!');
     }
-
 
     // Display the specified ticket.
     public function show(Ticket $ticket)
@@ -90,18 +91,21 @@ class TicketController extends Controller
     }
 
     // Update the specified ticket in storage.
-    public function update(Request $request, Ticket $ticket)
+    public function update(Request $request, string $id)
     {
-        $request->validate([
-            'client_id' => 'required|exists:clients,id',
-            'site_id' => 'required|exists:sites,id',
-            'kit_id' => 'required|exists:kits,id',
-            'date' => 'required|date',
-            'location' => 'required|string|max:255',
-            'wan' => 'required|string|max:255',
-            'reason' => 'required|string|max:255',
-            'status' => 'required|string|in:active,closed',
-        ]);
+        $ticket = Ticket::findOrFail($id);
+
+        // $request->validate([
+        //     'date' => 'required|date',
+        //     'ticket_number' => 'required|unique:tickets,ticket_number,' . $ticket->id,
+        //     'client_id' => 'required|exists:clients,id',
+        //     'site_id' => 'required|exists:sites,id',
+        //     'kit_id' => 'required|exists:kits,id',
+        //     'location' => 'required|string',
+        //     'wan' => 'required|string',
+        //     'reason' => 'required|string',
+        //     'status' => 'required|string',
+        // ]);
 
         $ticket->update($request->all());
 
@@ -112,20 +116,6 @@ class TicketController extends Controller
     public function destroy(Ticket $ticket)
     {
         $ticket->delete();
-
         return redirect()->route('tickets.index')->with('status', 'Ticket deleted successfully!');
     }
-
-
-    // public function close(Request $request, Ticket $ticket)
-    // {
-    //     // Update the status of the ticket to 'closed'
-    //     $ticket->status = 'closed';
-    //     $ticket->save();
-
-    //     // Redirect back to the tickets index page with a success message
-    //     return redirect()->route('tickets.index')->with('success', 'Ticket has been closed successfully.');
-    // }
-
-
 }

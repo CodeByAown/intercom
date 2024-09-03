@@ -14,6 +14,7 @@ class Ticket extends Model
         'client_id',
         'site_id',
         'kit_id',
+        'ticket_number',
         'location',
         'wan',
         'reason',

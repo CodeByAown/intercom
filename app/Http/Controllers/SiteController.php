@@ -51,10 +51,10 @@ class SiteController extends Controller
       // Update the specified site in storage.
       public function update(Request $request, Site $site)
       {
-          $request->validate([
-              'client_id' => 'required',
-              'name' => 'required',
-          ]);
+        //   $request->validate([
+        //       'client_id' => 'required',
+        //       'name' => 'required',
+        //   ]);
 
           $site->update($request->all());
 

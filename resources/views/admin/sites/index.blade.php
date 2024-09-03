@@ -12,6 +12,11 @@
 <div class="main-content">
     <h2>Sites</h2>
     <a href="{{ route('sites.create') }}" class="btn btn-primary mb-3">Add New Site</a>
+    @if(session('status'))
+    <div class="alert alert-success">
+        {{ session('status') }}
+    </div>
+@endif
     <div class="card">
         <div class="card-body">
     <table id="sites-table" class="table table-bordered display">

@@ -8,6 +8,7 @@ use App\Models\Kit;
 use App\Models\Site;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class FormController extends Controller
 {
@@ -53,19 +54,19 @@ class FormController extends Controller
     {
         // Validate the form data
         $request->validate([
-            'client_id' => 'required',
-            'site_id' => 'required',
-            'kit_id' => 'required',
-            'speed' => 'required',
+            'client_id' => 'required|exists:clients,id',
+            'site_id' => 'required|exists:sites,id',
+            'kit_id' => 'required|exists:kits,id',
+            'speed' => 'required|string',
             'poor_cable' => 'required|boolean',
             'update_pending' => 'required|boolean',
             'obstruction' => 'required|boolean',
             'login_issue' => 'required|boolean',
         ]);
 
-        // Set the current date automatically
+        // Create a new entry
         $entry = new Entry();
-        $entry->date = $request->date; // Automatically set to current date
+        $entry->date = $request->date;
         $entry->client_id = $request->client_id;
         $entry->site_id = $request->site_id;
         $entry->kit_id = $request->kit_id;
@@ -76,14 +77,15 @@ class FormController extends Controller
         $entry->login_issue = $request->login_issue;
         $entry->save();
 
+
         // Check if any issues require a ticket
         if ($this->needsTicket($request)) {
             // Check if a ticket already exists; if not, create a new one
             if (!$this->ticketExists($entry)) {
                 $this->openNewTicket($entry);
-                return redirect()->back()->with('warning', 'A new ticket has been opened due to detected issues.');
+                return redirect()->back()->with('warning', 'Form saved successfully and new ticket has been opened due to detected issues!');
             } else {
-                return redirect()->back()->with('warning', 'An existing ticket was found for these issues.');
+                return redirect()->back()->with('warning', 'Form saved successfully and An existing ticket was found for these issues!');
             }
         }
 
@@ -120,7 +122,7 @@ class FormController extends Controller
         $ticket->client_id = $entry->client_id;
         $ticket->site_id = $entry->site_id;
         $ticket->kit_id = $entry->kit_id;
-        $ticket->ticket_number = date('Ymd') . '-' . strtoupper(uniqid());
+        $ticket->ticket_number = date('Ymd') . '-' . uniqid();
         $ticket->location = 'Unknown'; // Adjust based on your data
         $ticket->wan = 'Unknown'; // Adjust based on your data
         $ticket->reason = 'Issue detected'; // Customize the reason as needed

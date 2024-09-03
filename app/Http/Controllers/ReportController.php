@@ -174,9 +174,6 @@ class ReportController extends Controller
         return $pdf->download('report.pdf');
     }
 
-
-
-
     // extras
 
     private function generateCharts($issueCounts)

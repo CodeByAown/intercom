@@ -12,9 +12,13 @@
 <div class="main-content">
     <h2>Clients</h2>
     <a href="{{ route('clients.create') }}" class="btn btn-primary mb-3">Add New Client</a>
+    @if(session('status'))
+    <div class="alert alert-success">
+        {{ session('status') }}
+    </div>
+@endif
     <div class="card">
         <div class="card-body">
-
     <table id="clients-table" class="table table-bordered display">
         <thead>
             <tr>
