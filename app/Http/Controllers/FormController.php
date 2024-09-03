@@ -11,24 +11,31 @@ use Illuminate\Http\Request;
 
 class FormController extends Controller
 {
-
+    /**
+     * Show the form for data entry.
+     */
     public function index()
     {
-        $clients = Client::all();
+        $clients = Client::all(); // Fetch all clients for dropdown
         return view('admin.form', compact('clients'));
     }
 
+    /**
+     * Get sites based on the selected client.
+     */
     public function getSites(Request $request)
     {
-        $sites = site::where('client_id', $request->client_id)->get();
+        $sites = Site::where('client_id', $request->client_id)->get();
         $options = '<option value="">Select Site</option>';
         foreach ($sites as $site) {
             $options .= '<option value="'.$site->id.'">'.$site->name.'</option>';
         }
         return $options;
     }
-    // next
 
+    /**
+     * Get kits based on the selected site.
+     */
     public function getKits(Request $request)
     {
         $kits = Kit::where('site_id', $request->site_id)->get();
@@ -39,16 +46,17 @@ class FormController extends Controller
         return $options;
     }
 
-    // next
-
+    /**
+     * Save the form data and handle ticket creation if needed.
+     */
     public function saveForm(Request $request)
     {
         // Validate the form data
         $request->validate([
-            'client_id' => 'required|exists:clients,id',
-            'site_id' => 'required|exists:sites,id',
-            'kit_id' => 'required|exists:kits,id',
-            'speed' => 'required|string|max:255',
+            'client_id' => 'required',
+            'site_id' => 'required',
+            'kit_id' => 'required',
+            'speed' => 'required',
             'poor_cable' => 'required|boolean',
             'update_pending' => 'required|boolean',
             'obstruction' => 'required|boolean',
@@ -57,7 +65,7 @@ class FormController extends Controller
 
         // Set the current date automatically
         $entry = new Entry();
-        $entry->date = now(); // Automatically set to current date
+        $entry->date = $request->date; // Automatically set to current date
         $entry->client_id = $request->client_id;
         $entry->site_id = $request->site_id;
         $entry->kit_id = $request->kit_id;
@@ -70,19 +78,29 @@ class FormController extends Controller
 
         // Check if any issues require a ticket
         if ($this->needsTicket($request)) {
-            $this->openNewTicket($entry);
-            return redirect()->back()->with('warning', 'A new ticket has been opened due to detected issues.');
+            // Check if a ticket already exists; if not, create a new one
+            if (!$this->ticketExists($entry)) {
+                $this->openNewTicket($entry);
+                return redirect()->back()->with('warning', 'A new ticket has been opened due to detected issues.');
+            } else {
+                return redirect()->back()->with('warning', 'An existing ticket was found for these issues.');
+            }
         }
 
         return redirect()->back()->with('status', 'Form saved successfully!');
     }
 
+    /**
+     * Determine if the form data needs a new ticket.
+     */
     private function needsTicket($request)
     {
         return !($request->speed === '1gbps' && !$request->poor_cable && !$request->update_pending && !$request->obstruction && !$request->login_issue);
     }
 
-    // Helper method to check if a ticket exists for the given entry
+    /**
+     * Check if a ticket exists for the given entry.
+     */
     private function ticketExists($entry)
     {
         return Ticket::where('client_id', $entry->client_id)
@@ -92,19 +110,20 @@ class FormController extends Controller
                      ->exists();
     }
 
-    // Helper method to open a new ticket
+    /**
+     * Open a new ticket.
+     */
     private function openNewTicket($entry)
     {
-
         $ticket = new Ticket();
         $ticket->date = $entry->date;
         $ticket->client_id = $entry->client_id;
         $ticket->site_id = $entry->site_id;
         $ticket->kit_id = $entry->kit_id;
         $ticket->ticket_number = date('Ymd') . '-' . strtoupper(uniqid());
-        $ticket->location = 'Unknown'; // You might want to adjust this based on your data
-        $ticket->wan = 'Unknown'; // You might want to adjust this based on your data
-        $ticket->reason = 'Issue detected'; // Customize the reason as per your requirements
+        $ticket->location = 'Unknown'; // Adjust based on your data
+        $ticket->wan = 'Unknown'; // Adjust based on your data
+        $ticket->reason = 'Issue detected'; // Customize the reason as needed
         $ticket->status = 'active';
         $ticket->save();
     }

@@ -161,15 +161,15 @@
                                 class="user-img-radious-style"> <span class="d-sm-none d-lg-inline-block"></span></a>
                         <div class="dropdown-menu dropdown-menu-right pullDown">
                             <div class="dropdown-title">Hello Sarah Smith</div>
-                            <a href="profile.html" class="dropdown-item has-icon"> <i class="far
+                            <a href="{{ route('reports.index') }}" class="dropdown-item has-icon"> <i class="far
 										fa-user"></i> Profile
-                            </a> <a href="timeline.html" class="dropdown-item has-icon"> <i class="fas fa-bolt"></i>
+                            </a> <a href="{{ route('reports.index') }}" class="dropdown-item has-icon"> <i class="fas fa-bolt"></i>
                                 Activities
                             </a> <a href="#" class="dropdown-item has-icon"> <i class="fas fa-cog"></i>
                                 Settings
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a href="auth-login.html" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
+                            <a href="{{ route('reports.index') }}" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
                                 Logout
                             </a>
                         </div>
@@ -179,7 +179,7 @@
             <div class="main-sidebar sidebar-style-2">
                 <aside id="sidebar-wrapper">
                     <div class="sidebar-brand">
-                        <a href="index.html"> <img alt="image" src="{{asset('assets/img/logo.png')}}" class="header-logo" /> <span
+                        <a href="{{ route('reports.index') }}"> <img alt="image" src="{{asset('assets/img/logo.png')}}" class="header-logo" /> <span
                                 class="logo-name">Otika</span>
                         </a>
                     </div>
@@ -244,6 +244,8 @@
     <script src="{{ asset('assets/js/scripts.js') }}"></script>
     <!-- Custom JS File -->
     <script src="{{ asset('assets/js/custom.js') }}"></script>
+    {{-- chart.js --}}
+    <script src="{{ asset('https://cdn.jsdelivr.net/npm/chart.js') }}"></script>
 
     @yield('js')
 </body>

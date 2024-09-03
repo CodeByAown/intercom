@@ -54,13 +54,20 @@ Result
 @section('content')
 <div class="main-content">
     <section class="section">
+        @if(request('client_id'))
+        <h2>Report for Client: {{ $client_name }}</h2>
+    @else
+        <h2>Report for All Clients</h2>
+    @endif
         <div class="section-header">
-            <h1>Report Results</h1>
+            <h1 class="mb-4">Report Results</h1>
+
         </div>
 
         <div class="section-body">
             <form method="POST" action="{{ route('reports.export') }}" style="display: inline;">
                 @csrf
+                <input type="hidden" name="client_id" value="{{ request('client_id')}}">
                 <input type="hidden" name="time_period" value="{{ request('time_period') }}">
                 <button type="submit" class="btn btn-success mb-3">Export to PDF</button>
             </form>
@@ -240,3 +247,5 @@ Result
     const lineChart = new Chart(ctxLine, lineConfig);
 </script>
 @endsection
+
+

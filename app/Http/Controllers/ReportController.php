@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entry;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
@@ -16,13 +17,15 @@ class ReportController extends Controller
 {
     public function index()
     {
-        return view('admin.reports.index');
+        $clients = Client::all(); // Assuming you have a Client model
+        return view('admin.reports.index', compact('clients'));
     }
 
     public function generate(Request $request)
     {
         $request->validate([
-            'time_period' => 'required|string',
+            'time_period' => 'required',
+            'client_id' => 'nullable',
         ]);
 
         $startDate = null;
@@ -40,8 +43,22 @@ class ReportController extends Controller
                 break;
         }
 
-        // Retrieve entries based on the date range
-        $entries = Entry::whereBetween('date', [$startDate, $endDate])->get();
+        // Retrieve entries based on the date range and client selection
+        $query = Entry::whereBetween('date', [$startDate, $endDate]);
+
+        // if ($request->client_id) {
+        //     $query->where('client_id', $request->client_id);
+        // }
+
+        if ($request->client_id) {
+            $query->where('client_id', $request->client_id);
+            $client = Client::find($request->client_id);
+            $client_name = $client ? $client->name : 'Unknown Client';
+        } else {
+            $client_name = null; // For all clients
+        }
+
+        $entries = $query->get();
         if ($entries->isEmpty()) {
             return redirect()->back()->with('message', 'No entries found for this time period.');
         }
@@ -49,8 +66,9 @@ class ReportController extends Controller
         // Prepare data for the pie chart
         $issueCounts = $this->getIssueCounts($entries);
 
-        return view('admin.reports.result', compact('entries', 'issueCounts'));
+        return view('admin.reports.result', compact('entries', 'issueCounts','client_name'));
     }
+
 
     private function getIssueCounts($entries)
     {
@@ -110,43 +128,58 @@ class ReportController extends Controller
 
 
     public function export(Request $request)
-{
-    $request->validate([
-        'time_period' => 'required|string',
-    ]);
+    {
+        $request->validate([
+            'time_period' => 'required',
+            'client_id' => 'nullable',
+        ]);
 
-    // Similar logic to generate report data
-    $startDate = null;
-    $endDate = now();
+        $startDate = null;
+        $endDate = now();
 
-    switch ($request->time_period) {
-        case 'last_week':
-            $startDate = now()->subWeek();
-            break;
-        case 'last_month':
-            $startDate = now()->subMonth();
-            break;
-        case 'last_12_months':
-            $startDate = now()->subYear();
-            break;
+        switch ($request->time_period) {
+            case 'last_week':
+                $startDate = now()->subWeek();
+                break;
+            case 'last_month':
+                $startDate = now()->subMonth();
+                break;
+            case 'last_12_months':
+                $startDate = now()->subYear();
+                break;
+        }
+
+        $query = Entry::whereBetween('date', [$startDate, $endDate]);
+
+        if ($request->client_id) {
+            $query->where('client_id', $request->client_id);
+            $client = Client::find($request->client_id);
+            $client_name = $client ? $client->name : 'Unknown Client';
+        } else {
+            $client_name = null; // For all clients
+        }
+
+        $entries = $query->get();
+        if ($entries->isEmpty()) {
+            return redirect()->back()->with('message', 'No entries found for this time period.');
+        }
+
+        $issueCounts = $this->getIssueCounts($entries);
+
+        // Generate charts as images
+        $this->generateCharts($issueCounts);
+
+        // Load the view for PDF
+        $pdf = Pdf::loadView('admin.reports.pdf', compact('entries', 'issueCounts', 'client_name'));
+        return $pdf->download('report.pdf');
     }
 
-    $entries = Entry::whereBetween('date', [$startDate, $endDate])->get();
-    if ($entries->isEmpty()) {
-        return redirect()->back()->with('message', 'No entries found for this time period.');
-    }
 
-    $issueCounts = $this->getIssueCounts($entries);
 
-    // Generate charts as images
-    $this->generateCharts($issueCounts);
 
-    // Load the view for PDF
-    $pdf = pdf::loadView('admin.reports.pdf', compact('entries', 'issueCounts'));
-    return $pdf->download('report.pdf');
-}
+    // extras
 
-private function generateCharts($issueCounts)
+    private function generateCharts($issueCounts)
 {
     // Generate Pie Chart
     $pieChartPath = 'charts/pie_chart.png';
@@ -204,4 +237,6 @@ private function createChartImage($type, $data, $path)
     // Save the chart image
     Storage::put($path, $chartJs);
 }
+
 }
+

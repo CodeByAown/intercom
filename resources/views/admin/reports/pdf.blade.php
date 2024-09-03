@@ -177,6 +177,12 @@
     <div class="alert">{{ session('message') }}</div>
     @endif
 
+    @if(request('client_id'))
+    <h2>Report for Client: {{ $client_name }}</h2>
+@else
+    <h2>Report for All Clients</h2>
+@endif
+
     <h1>Report Results</h1>
 
     <table>
@@ -212,15 +218,6 @@
         <li>Login Issue: {{ $issueCounts['login_issue'] }}</li>
     </ul>
 
-    <h2>Charts</h2>
-    <h3>Pie Chart</h3>
-    <img src="{{ asset('storage/charts/pie_chart.png') }}" alt="Pie Chart">
-
-    <h3>Bar Chart</h3>
-    <img src="{{ asset('storage/charts/bar_chart.png') }}" alt="Bar Chart">
-
-    <h3>Line Chart</h3>
-    <img src="{{ asset('storage/charts/line_chart.png') }}" alt="Line Chart">
 
 </body>
 </html>
