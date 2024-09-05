@@ -25,7 +25,7 @@ class ReportController extends Controller
     {
         $request->validate([
             'time_period' => 'required',
-            'client_id' => 'nullable',
+            'client_id' => 'required',
         ]);
 
         $startDate = null;
@@ -46,10 +46,6 @@ class ReportController extends Controller
         // Retrieve entries based on the date range and client selection
         $query = Entry::whereBetween('date', [$startDate, $endDate]);
 
-        // if ($request->client_id) {
-        //     $query->where('client_id', $request->client_id);
-        // }
-
         if ($request->client_id) {
             $query->where('client_id', $request->client_id);
             $client = Client::find($request->client_id);
@@ -63,11 +59,35 @@ class ReportController extends Controller
             return redirect()->back()->with('message', 'No entries found for this time period.');
         }
 
-        // Prepare data for the pie chart
+        // Prepare data for overall issue counts
         $issueCounts = $this->getIssueCounts($entries);
+// dd( $issueCounts);
+        // Prepare data for issue counts per site
+        $issueCountsPerSite = [];
+        foreach ($entries as $entry) {
+            $siteId = $entry->site_id; // Assuming there's a site_id in Entry
+            if (!isset($issueCountsPerSite[$siteId])) {
+                $issueCountsPerSite[$siteId] = [
+                    'siteName' => $entry->site->name, // Store site name here
+                    'poor_cable' => 0,
+                    'update_pending' => 0,
+                    'obstruction' => 0,
+                    'login_issue' => 0,
+                ];
+            }
 
-        return view('admin.reports.result', compact('entries', 'issueCounts','client_name'));
+            // Increment counts based on issues
+            if ($entry->poor_cable) $issueCountsPerSite[$siteId]['poor_cable']++;
+            if ($entry->update_pending) $issueCountsPerSite[$siteId]['update_pending']++;
+            if ($entry->obstruction) $issueCountsPerSite[$siteId]['obstruction']++;
+            if ($entry->login_issue) $issueCountsPerSite[$siteId]['login_issue']++;
+        }
+
+        return view('admin.reports.result', compact('entries', 'issueCounts', 'issueCountsPerSite', 'client_name'));
     }
+
+
+
 
 
     private function getIssueCounts($entries)
@@ -88,43 +108,6 @@ class ReportController extends Controller
 
         return $issueCounts;
     }
-
-
-    // public function export(Request $request)
-    // {
-    //     $request->validate([
-    //         'time_period' => 'required|string',
-    //     ]);
-
-    //     // Similar logic to generate report data
-    //     $startDate = null;
-    //     $endDate = now();
-
-    //     switch ($request->time_period) {
-    //         case 'last_week':
-    //             $startDate = now()->subWeek();
-    //             break;
-    //         case 'last_month':
-    //             $startDate = now()->subMonth();
-    //             break;
-    //         case 'last_12_months':
-    //             $startDate = now()->subYear();
-    //             break;
-    //     }
-
-    //     $entries = Entry::whereBetween('date', [$startDate, $endDate])->get();
-    //     if ($entries->isEmpty()) {
-    //         return redirect()->back()->with('message', 'No entries found for this time period.');
-    //     }
-
-    //     $issueCounts = $this->getIssueCounts($entries);
-
-    //     // Load the view for PDF
-    //     $pdf = pdf::loadView('admin.reports.pdf', compact('entries', 'issueCounts'));
-    //     return $pdf->download('report.pdf');
-    // }
-
-
 
 
     public function export(Request $request)

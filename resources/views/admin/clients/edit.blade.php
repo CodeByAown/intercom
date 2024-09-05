@@ -7,6 +7,15 @@
 @section('content')
 <div class="main-content">
     <h2>Edit Client</h2>
+    @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
     <div class="card">
         <div class="card-body">
     <form method="POST" action="{{ route('clients.update', $client->id) }}">

@@ -81,7 +81,12 @@ Form
                 <!-- Speed Field -->
                 <div class="mb-3">
                     <label for="speed" class="form-label">Speed</label>
-                    <input type="text" class="form-control" id="speed" name="speed" onchange="checkForWarnings()">
+                    <select class="form-control" id="speed" name="speed" onchange="checkForWarnings()">
+                        <option value="1Gbps">1Gbps</option>
+                        <option value="10Mbps">10Mbps</option>
+                        <option value="100Mbps">100Mbps</option>
+                    </select>
+                    {{-- <input type="text" class="form-control" id="speed" name="speed" onchange="checkForWarnings()"> --}}
                 </div>
 
                 <!-- Poor Cable Field -->
@@ -178,7 +183,7 @@ Form
         var obstruction = $('#obstruction').val();
         var loginIssue = $('#login_issue').val();
 
-        if (speed !== '1gbps' || poorCable !== '0' || updatePending !== '0' || obstruction !== '0' || loginIssue !== '0') {
+        if (speed !== '1Gbps' || poorCable !== '0' || updatePending !== '0' || obstruction !== '0' || loginIssue !== '0') {
             $('#warning-box').show().addClass('warning-box');
         } else {
             $('#warning-box').hide();

@@ -21,6 +21,12 @@ class FormController extends Controller
         return view('admin.form', compact('clients'));
     }
 
+    public function showForms()
+{
+    $entries = Entry::all(); // Fetch all entries from the database
+    return view('admin.showforms', compact('entries'));
+}
+
     /**
      * Get sites based on the selected client.
      */
@@ -97,7 +103,7 @@ class FormController extends Controller
      */
     private function needsTicket($request)
     {
-        return !($request->speed === '1gbps' && !$request->poor_cable && !$request->update_pending && !$request->obstruction && !$request->login_issue);
+        return !($request->speed === '1Gbps' && !$request->poor_cable && !$request->update_pending && !$request->obstruction && !$request->login_issue);
     }
 
     /**
@@ -130,3 +136,5 @@ class FormController extends Controller
         $ticket->save();
     }
 }
+
+

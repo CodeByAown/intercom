@@ -19,7 +19,7 @@ class TicketController extends Controller
     }
 
 
-    public function activate($id)
+    public function reopen($id)
     {
         $ticket = Ticket::findOrFail($id);
         if ($ticket->status !== 'active') {

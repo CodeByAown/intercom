@@ -98,9 +98,14 @@
                     }
                 });
             } else {
-                table.rows().show();
+                // Show all rows when checkbox is unchecked
+                table.rows().every(function() {
+                    $(this.node()).show();
+                });
             }
+            table.draw(); // Redraw the table to apply changes
         });
     });
 </script>
+
 @endsection

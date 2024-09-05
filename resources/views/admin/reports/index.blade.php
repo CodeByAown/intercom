@@ -9,6 +9,18 @@ Reports
     @if(session('message'))
     <div class="alert alert-info mt-3">{{ session('message') }}</div>
 @endif
+
+
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
     <section class="section">
         <div class="section-header">
             <h1>Generate Reports</h1>
@@ -25,7 +37,7 @@ Reports
                         <div class="form-group">
                             <label for="client_id">Select Client</label>
                             <select class="form-control" id="client_id" name="client_id">
-                                <option value="">All Clients</option>
+                                {{-- <option value="">All Clients</option> --}}
                                 @foreach($clients as $client)
                                     <option value="{{ $client->id }}">{{ $client->name }}</option>
                                 @endforeach

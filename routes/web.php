@@ -3,6 +3,7 @@
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\FormController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KitController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SiteController;
@@ -19,10 +20,9 @@ Route::get('/', function () {
 // Ensure all routes below require authentication
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
-    Route::view('/tickets', 'admin.ticket')->name('tickets');
 
     // Reports routes
     Route::prefix('reports')->group(function () {
@@ -32,7 +32,8 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Form routes
-    Route::get('/form', [FormController::class, 'index'])->name('form.index');
+    Route::get('/create/entry', [FormController::class, 'index'])->name('form.index');
+    Route::get('/entries', [FormController::class, 'showForms'])->name('forms.index');
     Route::get('/get-sites', [FormController::class, 'getSites'])->name('getSites');
     Route::get('/get-kits', [FormController::class, 'getKits'])->name('getKits');
     Route::post('/form-save', [FormController::class, 'saveForm'])->name('form.save');

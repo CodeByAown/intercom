@@ -6,6 +6,7 @@ Result
 
 @section('style')
 <style>
+    /* Styles for the report page */
     .section-header h1 {
         color: #4A90E2;
         margin-bottom: 20px;
@@ -55,14 +56,23 @@ Result
 <div class="main-content">
     <section class="section">
         @if(request('client_id'))
-        <h2>Report for Client: {{ $client_name }}</h2>
-    @else
-        <h2>Report for All Clients</h2>
-    @endif
+            <h2 class="text-center">Report for Client: {{ $client_name }}</h2>
+        @else
+            <h2>Report for All Clients</h2>
+        @endif
         <div class="section-header">
             <h1 class="mb-4">Report Results</h1>
-
         </div>
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <div class="section-body">
             <form method="POST" action="{{ route('reports.export') }}" style="display: inline;">
@@ -97,17 +107,17 @@ Result
                 </tbody>
             </table>
 
+            <!-- Overall Issue Counts Chart -->
             <div class="chart-container">
-                <canvas id="issueChart"></canvas>
+                <canvas id="overallIssueChart"></canvas>
             </div>
 
-            <div class="chart-container">
-                <canvas id="barChart"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <canvas id="lineChart"></canvas>
-            </div>
+            <!-- Individual Issue Counts Charts -->
+            @foreach($issueCountsPerSite as $siteId => $issueCountss)
+                <div class="chart-container">
+                    <canvas id="issueChart{{ $siteId }}"></canvas>
+                </div>
+            @endforeach
         </div>
     </section>
 </div>
@@ -116,136 +126,118 @@ Result
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctxPie = document.getElementById('issueChart').getContext('2d');
-    const issueCounts = @json($issueCounts);
+    document.addEventListener('DOMContentLoaded', function () {
+        // Overall Issue Counts Chart
+        const overallIssueCounts = @json($issueCounts);
+        console.log(overallIssueCounts);
 
-    const pieData = {
-        labels: ['Poor Cable', 'Update Pending', 'Obstruction', 'Login Issue'],
-        datasets: [{
-            label: 'Issue Frequency',
-            data: [issueCounts.poor_cable, issueCounts.update_pending, issueCounts.obstruction, issueCounts.login_issue],
-            backgroundColor: [
-                'rgba(255, 206, 86, 0.6)',
-                'rgba(54, 162, 235, 0.6)',
-                'rgba(255, 99, 132, 0.6)',
-                'rgba(75, 192, 192, 0.6)'
-            ],
-            borderColor: [
-                'rgba(255, 206, 86, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(75, 192, 192, 1)'
-            ],
-            borderWidth: 1,
-            hoverOffset: 4
-        }]
-    };
+        const ctxOverall = document.getElementById('overallIssueChart').getContext('2d');
+        const overallPieData = {
+            labels: ['Poor Cable', 'Update Pending', 'Obstruction', 'Login Issue'],
+            datasets: [{
+                label: 'Overall Issue Frequency',
+                data: [
+                    overallIssueCounts.poor_cable,
+                    overallIssueCounts.update_pending,
+                    overallIssueCounts.obstruction,
+                    overallIssueCounts.login_issue
+                ],
+                backgroundColor: [
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(75, 192, 192, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1,
+                hoverOffset: 4
+            }]
+        };
 
-    const pieConfig = {
-        type: 'pie',
-        data: pieData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Issue Frequency Overview',
-                    font: {
-                        size: 20
-                    }
-                }
-            }
-        },
-    };
-
-    const issueChart = new Chart(ctxPie, pieConfig);
-
-    // Bar Chart
-    const ctxBar = document.getElementById('barChart').getContext('2d');
-    const barData = {
-        labels: ['Poor Cable', 'Update Pending', 'Obstruction', 'Login Issue'],
-        datasets: [{
-            label: 'Issue Frequency',
-            data: [issueCounts.poor_cable, issueCounts.update_pending, issueCounts.obstruction, issueCounts.login_issue],
-            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-        }]
-    };
-
-    const barConfig = {
-        type: 'bar',
-        data: barData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Bar Chart of Issues',
-                    font: {
-                        size: 20
+        const overallPieConfig = {
+            type: 'pie',
+            data: overallPieData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Overall Issue Frequency Overview',
+                        font: {
+                            size: 20
+                        }
                     }
                 }
             },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        },
-    };
+        };
 
-    const barChart = new Chart(ctxBar, barConfig);
+        new Chart(ctxOverall, overallPieConfig);
 
-    // Line Chart
-    const ctxLine = document.getElementById('lineChart').getContext('2d');
-    const lineData = {
-        labels: ['Poor Cable', 'Update Pending', 'Obstruction', 'Login Issue'],
-        datasets: [{
-            label: 'Issue Trends',
-            data: [issueCounts.poor_cable, issueCounts.update_pending, issueCounts.obstruction, issueCounts.login_issue],
-            fill: false,
-            borderColor: 'rgba(255, 99, 132, 1)',
-            tension: 0.1
-        }]
-    };
+        // Individual Issue Counts Charts
+        const issueCountsData = @json($issueCountsPerSite);
+        Object.keys(issueCountsData).forEach(siteId => {
+            const issueCountss = issueCountsData[siteId];
+            const ctx = document.getElementById('issueChart' + siteId).getContext('2d');
 
-    const lineConfig = {
-        type: 'line',
-        data: lineData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Line Chart of Issues',
-                    font: {
-                        size: 20
+            const pieData = {
+                labels: ['Poor Cable', 'Update Pending', 'Obstruction', 'Login Issue'],
+                datasets: [{
+                    label: 'Issue Frequency',
+                    data: [
+                        issueCountss.poor_cable,
+                        issueCountss.update_pending,
+                        issueCountss.obstruction,
+                        issueCountss.login_issue
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(75, 192, 192, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1,
+                    hoverOffset: 4
+                }]
+            };
+
+            const pieConfig = {
+                type: 'pie',
+                data: pieData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Issue Frequency Overview for Site: ' + issueCountss.siteName,
+                            font: {
+                                size: 20
+                            }
+                        }
                     }
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        },
-    };
+            };
 
-    const lineChart = new Chart(ctxLine, lineConfig);
+            new Chart(ctx, pieConfig);
+        });
+    });
 </script>
 @endsection
-
-

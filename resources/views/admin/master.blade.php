@@ -204,10 +204,8 @@
                             <a href="{{ route('tickets.index') }}" class="nav-link"><i data-feather="bar-chart"></i><span>Tickets</span></a>
                         </li>
                         <li class="dropdown">
-                            <a href="{{ route('form.index') }}" class="nav-link"><i data-feather="database"></i><span>Form</span></a>
+                            <a href="{{ route('forms.index') }}" class="nav-link"><i data-feather="align-justify"></i><span>Entries</span></a>
                         </li>
-
-
 
                     </ul>
                 </aside>
