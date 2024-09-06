@@ -180,34 +180,30 @@
                 <aside id="sidebar-wrapper">
                     <div class="sidebar-brand">
                         <a href="{{ route('reports.index') }}"> <img alt="image" src="{{asset('assets/img/logo.png')}}" class="header-logo" /> <span
-                                class="logo-name">Otika</span>
+                                class="logo-name">Intercom</span>
                         </a>
                     </div>
                     <ul class="sidebar-menu">
-                        {{-- <li class="menu-header">Main</li> --}}
-                        {{-- <li class="dropdown active">
-                            <a href="{{ route('dashboard') }}" class="nav-link"><i data-feather="monitor"></i><span>Dashboard</span></a>
-                        </li> --}}
-                        <li class="dropdown">
+                        <li class="dropdown {{ request()->routeIs('reports.index') ? 'active' : '' }}">
                             <a href="{{ route('reports.index') }}" class="nav-link"><i data-feather="file-text"></i><span>Reports</span></a>
                         </li>
-                        <li class="dropdown">
-                            <a href="{{ route('clients.index') }}" class="nav-link"><i data-feather="activity"></i><span>clients</span></a>
+                        <li class="dropdown {{ request()->routeIs('clients.index') ? 'active' : '' }}">
+                            <a href="{{ route('clients.index') }}" class="nav-link"><i data-feather="activity"></i><span>Clients</span></a>
                         </li>
-                        <li class="dropdown">
+                        <li class="dropdown {{ request()->routeIs('sites.index') ? 'active' : '' }}">
                             <a href="{{ route('sites.index') }}" class="nav-link"><i data-feather="navigation"></i><span>Sites</span></a>
                         </li>
-                        <li class="dropdown">
+                        <li class="dropdown {{ request()->routeIs('kits.index') ? 'active' : '' }}">
                             <a href="{{ route('kits.index') }}" class="nav-link"><i data-feather="hash"></i><span>Kits</span></a>
                         </li>
-                        <li class="dropdown">
+                        <li class="dropdown {{ request()->routeIs('tickets.index') ? 'active' : '' }}">
                             <a href="{{ route('tickets.index') }}" class="nav-link"><i data-feather="bar-chart"></i><span>Tickets</span></a>
                         </li>
-                        <li class="dropdown">
+                        <li class="dropdown {{ request()->routeIs('forms.index') ? 'active' : '' }}">
                             <a href="{{ route('forms.index') }}" class="nav-link"><i data-feather="align-justify"></i><span>Entries</span></a>
                         </li>
-
                     </ul>
+
                 </aside>
             </div>
 

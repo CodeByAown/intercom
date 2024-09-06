@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Entry;
 use App\Models\Client;
+use App\Models\Kit;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
@@ -28,6 +29,7 @@ class ReportController extends Controller
             'client_id' => 'required',
         ]);
 
+        $clients = Client::all();
         $startDate = null;
         $endDate = now();
 
@@ -44,7 +46,7 @@ class ReportController extends Controller
         }
 
         // Retrieve entries based on the date range and client selection
-        $query = Entry::whereBetween('date', [$startDate, $endDate]);
+        $query = Entry::with('Kit')->whereBetween('date', [$startDate, $endDate]);
 
         if ($request->client_id) {
             $query->where('client_id', $request->client_id);
@@ -83,10 +85,8 @@ class ReportController extends Controller
             if ($entry->login_issue) $issueCountsPerSite[$siteId]['login_issue']++;
         }
 
-        return view('admin.reports.result', compact('entries', 'issueCounts', 'issueCountsPerSite', 'client_name'));
+        return view('admin.reports.result', compact('clients', 'entries', 'issueCounts', 'issueCountsPerSite', 'client_name'));
     }
-
-
 
 
 
@@ -150,73 +150,78 @@ class ReportController extends Controller
         $issueCounts = $this->getIssueCounts($entries);
 
         // Generate charts as images
-        $this->generateCharts($issueCounts);
+        // $this->generateCharts($issueCounts);
 
         // Load the view for PDF
         $pdf = Pdf::loadView('admin.reports.pdf', compact('entries', 'issueCounts', 'client_name'));
         return $pdf->download('report.pdf');
     }
 
+
+
+
+
+
     // extras
 
-    private function generateCharts($issueCounts)
-{
-    // Generate Pie Chart
-    $pieChartPath = 'charts/pie_chart.png';
-    $this->createChartImage('pie', $issueCounts, $pieChartPath);
+//     private function generateCharts($issueCounts)
+// {
+//     // Generate Pie Chart
+//     $pieChartPath = 'charts/pie_chart.png';
+//     $this->createChartImage('pie', $issueCounts, $pieChartPath);
 
-    // Generate Bar Chart
-    $barChartPath = 'charts/bar_chart.png';
-    $this->createChartImage('bar', $issueCounts, $barChartPath);
+//     // Generate Bar Chart
+//     $barChartPath = 'charts/bar_chart.png';
+//     $this->createChartImage('bar', $issueCounts, $barChartPath);
 
-    // Generate Line Chart
-    $lineChartPath = 'charts/line_chart.png';
-    $this->createChartImage('line', $issueCounts, $lineChartPath);
-}
+//     // Generate Line Chart
+//     $lineChartPath = 'charts/line_chart.png';
+//     $this->createChartImage('line', $issueCounts, $lineChartPath);
+// }
 
-private function createChartImage($type, $data, $path)
-{
-    $chartData = json_encode($data);
-    $chartJs = "
-        <canvas id='chart' width='400' height='400'></canvas>
-        <script>
-            const ctx = document.getElementById('chart').getContext('2d');
-            const chartData = $chartData;
-            const config = {
-                type: '$type',
-                data: {
-                    labels: ['Poor Cable', 'Update Pending', 'Obstruction', 'Login Issue'],
-                    datasets: [{
-                        label: 'Issue Frequency',
-                        data: [chartData.poor_cable, chartData.update_pending, chartData.obstruction, chartData.login_issue],
-                        backgroundColor: [
-                            'rgba(255, 206, 86, 0.6)',
-                            'rgba(54, 162, 235, 0.6)',
-                            'rgba(255, 99, 132, 0.6)',
-                            'rgba(75, 192, 192, 0.6)'
-                        ],
-                    }]
-                }
-            };
-            const myChart = new Chart(ctx, config);
-            const img = ctx.canvas.toDataURL('image/png');
-            img.onload = function() {
-                var imgElement = document.createElement('img');
-                imgElement.src = img;
-                imgElement.width = 400; // Adjust width as needed
-                imgElement.height = 400; // Adjust height as needed
-                document.body.appendChild(imgElement);
-                var link = document.createElement('a');
-                link.href = img;
-                link.download = '$path';
-                link.click();
-            };
-        </script>
-    ";
+// private function createChartImage($type, $data, $path)
+// {
+//     $chartData = json_encode($data);
+//     $chartJs = "
+//         <canvas id='chart' width='400' height='400'></canvas>
+//         <script>
+//             const ctx = document.getElementById('chart').getContext('2d');
+//             const chartData = $chartData;
+//             const config = {
+//                 type: '$type',
+//                 data: {
+//                     labels: ['Poor Cable', 'Update Pending', 'Obstruction', 'Login Issue'],
+//                     datasets: [{
+//                         label: 'Issue Frequency',
+//                         data: [chartData.poor_cable, chartData.update_pending, chartData.obstruction, chartData.login_issue],
+//                         backgroundColor: [
+//                             'rgba(255, 206, 86, 0.6)',
+//                             'rgba(54, 162, 235, 0.6)',
+//                             'rgba(255, 99, 132, 0.6)',
+//                             'rgba(75, 192, 192, 0.6)'
+//                         ],
+//                     }]
+//                 }
+//             };
+//             const myChart = new Chart(ctx, config);
+//             const img = ctx.canvas.toDataURL('image/png');
+//             img.onload = function() {
+//                 var imgElement = document.createElement('img');
+//                 imgElement.src = img;
+//                 imgElement.width = 400; // Adjust width as needed
+//                 imgElement.height = 400; // Adjust height as needed
+//                 document.body.appendChild(imgElement);
+//                 var link = document.createElement('a');
+//                 link.href = img;
+//                 link.download = '$path';
+//                 link.click();
+//             };
+//         </script>
+//     ";
 
-    // Save the chart image
-    Storage::put($path, $chartJs);
-}
+//     // Save the chart image
+//     Storage::put($path, $chartJs);
+// }
 
 }
 

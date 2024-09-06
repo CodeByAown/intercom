@@ -33,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Form routes
     Route::get('/create/entry', [FormController::class, 'index'])->name('form.index');
-    Route::get('/entries', [FormController::class, 'showForms'])->name('forms.index');
+    Route::get('/entries', [FormController::class, 'showentries'])->name('forms.index');
     Route::get('/get-sites', [FormController::class, 'getSites'])->name('getSites');
     Route::get('/get-kits', [FormController::class, 'getKits'])->name('getKits');
     Route::post('/form-save', [FormController::class, 'saveForm'])->name('form.save');
@@ -95,4 +95,5 @@ Route::middleware(['auth'])->group(function () {
     //     Route::put('{entry}', [EntryController::class, 'update'])->name('entries.update');
     //     Route::delete('{entry}', [EntryController::class, 'destroy'])->name('entries.destroy');
     // });
+
 });

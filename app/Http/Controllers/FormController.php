@@ -21,11 +21,11 @@ class FormController extends Controller
         return view('admin.form', compact('clients'));
     }
 
-    public function showForms()
-{
-    $entries = Entry::all(); // Fetch all entries from the database
-    return view('admin.showforms', compact('entries'));
-}
+    public function showentries()
+    {
+        $entries = Entry::all(); // Fetch all entries from the database
+        return view('admin.showentries', compact('entries'));
+    }
 
     /**
      * Get sites based on the selected client.
@@ -58,6 +58,9 @@ class FormController extends Controller
      */
     public function saveForm(Request $request)
     {
+
+        // dd($request->all());
+
         // Validate the form data
         $request->validate([
             'client_id' => 'required|exists:clients,id',
@@ -68,21 +71,50 @@ class FormController extends Controller
             'update_pending' => 'required|boolean',
             'obstruction' => 'required|boolean',
             'login_issue' => 'required|boolean',
+            // New fields validation
+            'speed_10mbps' => 'nullable|integer',
+            'speed_100mbps' => 'nullable|integer',
+            'speed_1gbps' => 'nullable|integer',
+            'yes_cablefield' => 'nullable|integer',
+            'no_cablefield' => 'nullable|integer',
+            'auto_reboot' => 'nullable|integer',
+            'manual_reboot' => 'nullable|integer',
+            'no_updatepending' => 'nullable|integer',
+            'full_obstruction' => 'nullable|integer',
+            'partial_obstruction' => 'nullable|integer',
+            'no_obstruction' => 'nullable|integer',
+            'yes_login_issue' => 'nullable|integer',
+            'no_login_issue' => 'nullable|integer',
         ]);
 
-        // Create a new entry
-        $entry = new Entry();
-        $entry->date = $request->date;
-        $entry->client_id = $request->client_id;
-        $entry->site_id = $request->site_id;
-        $entry->kit_id = $request->kit_id;
-        $entry->speed = $request->speed;
-        $entry->poor_cable = $request->poor_cable;
-        $entry->update_pending = $request->update_pending;
-        $entry->obstruction = $request->obstruction;
-        $entry->login_issue = $request->login_issue;
-        $entry->save();
+    // Create a new entry
+    $entry = new Entry();
+    $entry->date = $request->date;
+    $entry->client_id = $request->client_id;
+    $entry->site_id = $request->site_id;
+    $entry->kit_id = $request->kit_id;
+    $entry->speed = $request->speed;
+    $entry->poor_cable = $request->poor_cable;
+    $entry->update_pending = $request->update_pending;
+    $entry->obstruction = $request->obstruction;
+    $entry->login_issue = $request->login_issue;
 
+    // Save new fields
+    $entry->speed_10mbps = $request->input('speed_10mbps');
+    $entry->speed_100mbps = $request->input('speed_100mbps');
+    $entry->speed_1gbps = $request->input('speed_1gbps');
+    $entry->yes_cablefield = $request->input('yes_cablefield');
+    $entry->no_cablefield = $request->input('no_cablefield');
+    $entry->auto_reboot = $request->input('auto_reboot');
+    $entry->manual_reboot = $request->input('manual_reboot');
+    $entry->no_updatepending = $request->input('no_updatepending');
+    $entry->full_obstruction = $request->input('full_obstruction');
+    $entry->partial_obstruction = $request->input('partial_obstruction');
+    $entry->no_obstruction = $request->input('no_obstruction');
+    $entry->yes_login_issue = $request->input('yes_login_issue');
+    $entry->no_login_issue = $request->input('no_login_issue');
+
+    $entry->save();
 
         // Check if any issues require a ticket
         if ($this->needsTicket($request)) {
@@ -136,5 +168,3 @@ class FormController extends Controller
         $ticket->save();
     }
 }
-
-

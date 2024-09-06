@@ -18,7 +18,20 @@ class Entry extends Model
         'poor_cable',
         'update_pending',
         'obstruction',
-        'login_issue'
+        'login_issue',
+        'speed_10mbps',
+        'speed_100mbps',
+        'speed_1gbps',
+        'yes_cablefield',
+        'no_cablefield',
+        'auto_reboot',
+        'manual_reboot',
+        'no_updatepending',
+        'full_obstruction',
+        'partial_obstruction',
+        'no_obstruction',
+        'yes_login_issue',
+        'no_login_issue',
     ];
 
     // Relationship with Client
